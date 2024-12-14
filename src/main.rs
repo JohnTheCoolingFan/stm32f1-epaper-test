@@ -16,7 +16,7 @@ use embedded_graphics::{
     primitives::{Line, PrimitiveStyle},
 };
 use embedded_hal_bus::spi::RefCellDevice;
-use epd_waveshare::{epd2in9::*, prelude::*};
+use epd_waveshare::{epd2in9bc::*, prelude::*};
 use fmt::info;
 #[cfg(not(feature = "defmt"))]
 use panic_halt as _;
@@ -56,19 +56,18 @@ async fn main(_spawner: Spawner) {
     info!("Initializing epd");
 
     let mut epd =
-        Epd2in9::new(&mut spi, busy_in, dc, rst, &mut delay, None).expect("EPD creation error");
+        Epd2in9bc::new(&mut spi, busy_in, dc, rst, &mut delay, None).expect("EPD creation error");
 
     info!("Drawing");
 
-    let mut mono_display = Display2in9::default();
+    let mut mono_display = Display2in9bc::default();
     mono_display.set_rotation(DisplayRotation::Rotate90);
 
     let _ = Line::new(Point::new(0, 120), Point::new(0, 200))
         .into_styled(PrimitiveStyle::with_stroke(Color::Black, 1))
         .draw(&mut mono_display);
 
-    /*
-    let mut chromatic_display = Display2in9::default();
+    let mut chromatic_display = Display2in9bc::default();
     chromatic_display.set_rotation(DisplayRotation::Rotate90);
 
     let _ = Line::new(Point::new(15, 120), Point::new(15, 200))
@@ -84,7 +83,6 @@ async fn main(_spawner: Spawner) {
         chromatic_display.buffer(),
     )
     .unwrap();
-    */
 
     epd.display_frame(&mut spi, &mut delay).unwrap();
 
